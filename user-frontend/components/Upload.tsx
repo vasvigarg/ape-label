@@ -31,7 +31,8 @@ export const Upload = () => {
         },
       }
     );
-    router.push(`/task/${response.data.id}`);
+    const data = response.data as { id: string };
+    router.push(`/task/${data.id}`);
   }
 
   async function makePayment() {

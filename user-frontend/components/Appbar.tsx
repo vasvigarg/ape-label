@@ -23,7 +23,8 @@ export const Appbar = () => {
       signature,
       publicKey: publicKey?.toString(),
     });
-    localStorage.setItem("token", response.data.token);
+    const data = response.data as { token: string };
+    localStorage.setItem("token", data.token);
   }
 
   useEffect(() => {
@@ -42,7 +43,7 @@ export const Appbar = () => {
       </div>
 
       <div className="wallet-adapter-button-trigger">
-        <style jsx global>{`
+        <style>{`
           .wallet-adapter-button {
             background: linear-gradient(
               135deg,

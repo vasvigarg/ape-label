@@ -3,9 +3,29 @@ import { Appbar } from "@/components/Appbar";
 import { BACKEND_URL } from "@/utils";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { use } from "react";
 
-async function getTaskDetails(taskId: string) {
-  const response = await axios.get(
+// Define the types for the API response
+interface TaskResult {
+  [key: string]: {
+    count: number;
+    option: {
+      imageUrl: string;
+    };
+  };
+}
+
+interface TaskDetails {
+  title?: string;
+}
+
+interface ApiResponse {
+  result: TaskResult;
+  taskDetails: TaskDetails;
+}
+
+async function getTaskDetails(taskId: string): Promise<ApiResponse> {
+  const response = await axios.get<ApiResponse>(
     `${BACKEND_URL}/v1/user/task?taskId=${taskId}`,
     {
       headers: {
@@ -17,24 +37,14 @@ async function getTaskDetails(taskId: string) {
 }
 
 export default function Page({
-  params: { taskId },
+  params,
 }: {
-  params: { taskId: string };
+  params: Promise<{ taskId: string }>;
 }) {
-  const [result, setResult] = useState<
-    Record<
-      string,
-      {
-        count: number;
-        option: {
-          imageUrl: string;
-        };
-      }
-    >
-  >({});
-  const [taskDetails, setTaskDetails] = useState<{
-    title?: string;
-  }>({});
+  const { taskId } = use(params);
+
+  const [result, setResult] = useState<TaskResult>({});
+  const [taskDetails, setTaskDetails] = useState<TaskDetails>({});
 
   useEffect(() => {
     getTaskDetails(taskId).then((data) => {
@@ -52,6 +62,7 @@ export default function Page({
       <div className="flex justify-center pt-8">
         {Object.keys(result || {}).map((taskId) => (
           <Task
+            key={taskId}
             imageUrl={result[taskId].option.imageUrl}
             votes={result[taskId].count}
           />

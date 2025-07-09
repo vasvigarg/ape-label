@@ -22,24 +22,27 @@ export function UploadImage({
         },
       });
 
-      const presignedUrl = response.data.preSignedUrl;
+      type PresignedUrlResponse = {
+        preSignedUrl: string;
+        fields: Record<string, string>;
+      };
+      const data = response.data as PresignedUrlResponse;
+
+      const presignedUrl = data.preSignedUrl;
       const formData = new FormData();
-      formData.set("bucket", response.data.fields["bucket"]);
-      formData.set("X-Amz-Algorithm", response.data.fields["X-Amz-Algorithm"]);
-      formData.set(
-        "X-Amz-Credential",
-        response.data.fields["X-Amz-Credential"]
-      );
-      formData.set("X-Amz-Algorithm", response.data.fields["X-Amz-Algorithm"]);
-      formData.set("X-Amz-Date", response.data.fields["X-Amz-Date"]);
-      formData.set("key", response.data.fields["key"]);
-      formData.set("Policy", response.data.fields["Policy"]);
-      formData.set("X-Amz-Signature", response.data.fields["X-Amz-Signature"]);
-      formData.set("X-Amz-Algorithm", response.data.fields["X-Amz-Algorithm"]);
+      formData.set("bucket", data.fields["bucket"]);
+      formData.set("X-Amz-Algorithm", data.fields["X-Amz-Algorithm"]);
+      formData.set("X-Amz-Credential", data.fields["X-Amz-Credential"]);
+      formData.set("X-Amz-Algorithm", data.fields["X-Amz-Algorithm"]);
+      formData.set("X-Amz-Date", data.fields["X-Amz-Date"]);
+      formData.set("key", data.fields["key"]);
+      formData.set("Policy", data.fields["Policy"]);
+      formData.set("X-Amz-Signature", data.fields["X-Amz-Signature"]);
+      formData.set("X-Amz-Algorithm", data.fields["X-Amz-Algorithm"]);
       formData.append("file", file);
 
       const awsResponse = await axios.post(presignedUrl, formData);
-      onImageAdded(`${CLOUDFRONT_URL}/${response.data.fields["key"]}`);
+      onImageAdded(`${CLOUDFRONT_URL}/${data.fields["key"]}`);
     } catch (e) {
       console.log(e);
     }
